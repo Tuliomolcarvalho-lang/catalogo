@@ -348,9 +348,7 @@ const R = v => v != null ? v.toLocaleString('pt-BR', { style: 'currency', curren
 // ═══════════════════════════════════════════════
 // RENDER CARDS
 // ═══════════════════════════════════════════════
-function batColor(b) {
-  return b >= 80 ? '#1a9e5c' : b >= 50 ? '#d97706' : '#d63b3b';
-}
+function batColor(b) { return '#1a9e5c'; }
 
 function setLine(linha) {
   currentLine = linha;
@@ -397,7 +395,7 @@ function renderCards() {
       </div>`;
     }).join('');
 
-    const fotoSrc = p.foto || '';
+    const fotoSrc = Array.isArray(p.fotos) && p.fotos.length ? p.fotos[0] : (p.foto || '');
     const fotoHtml = fotoSrc
       ? `<img class="card-photo" src="${fotoSrc}" alt="${p.modelo}" loading="lazy" onclick="openLB(${p.id})">`
       : `<div class="card-photo-placeholder"><span>📷</span><small style="font-size:11px;font-weight:600">Sem foto</small></div>`;
@@ -445,12 +443,14 @@ function renderCards() {
 // ═══════════════════════════════════════════════
 function openLB(id) {
   const p = allProducts.find(x => x.id === id);
-  if (!p || !p.foto) return;
-  lbPhotos = [p.foto];
+  if (!p) return;
+  lbPhotos = Array.isArray(p.fotos) && p.fotos.length ? p.fotos : (p.foto ? [p.foto] : []);
+  if (!lbPhotos.length) return;
   lbIdx = 0;
   document.getElementById('lb-img').src = lbPhotos[0];
-  document.getElementById('lb-prev').style.display = 'none';
-  document.getElementById('lb-next').style.display = 'none';
+  const showNav = lbPhotos.length > 1;
+  document.getElementById('lb-prev').style.display = showNav ? 'flex' : 'none';
+  document.getElementById('lb-next').style.display = showNav ? 'flex' : 'none';
   document.getElementById('ov-photo').classList.add('open');
 }
 function closeLB() { document.getElementById('ov-photo').classList.remove('open'); }
